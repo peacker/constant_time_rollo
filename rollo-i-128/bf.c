@@ -346,124 +346,8 @@ void bf_addition(bf_element_t *c, bf_element_t *a, bf_element_t *b) {
 }
 
 void bf_double_addition(bf_double_element_t *c, bf_double_element_t *a, bf_double_element_t *b) {
-#ifdef AVX2
     c->value = _mm256_xor_si256(a->value, b->value);
-#else
-    c->value.high = b->value.high ^ a->value.high;
-    c->value.low = b->value.low ^ a->value.low;
-#endif
-
 }
-
-#ifndef AVX2
-
-static uint16_t interleave_zeros(uint8_t x) {
-    return (uint16_t) (((x * 0x0101010101010101ULL & 0x8040201008040201ULL) *
-                        0x0102040810204081ULL >> 49) & 0x5555);
-}
-
-static uint128_t _mm_clmulepi16_si128(uint64_t a, uint64_t b) {
-
-    uint64_t lo, t;
-    uint64_t A[16];
-    A[0] = 0;
-    A[1] = a;
-    A[2] = A[1] << 1;
-    A[3] = A[2] ^ A[1];
-    A[4] = A[2] << 1;
-    A[5] = A[4] ^ A[1];
-    A[6] = A[3] << 1;
-    A[7] = A[6] ^ A[1];
-    A[8] = A[4] << 1;
-    A[9] = A[8] ^ A[1];
-    A[10] = A[5] << 1;
-    A[11] = A[10] ^ A[1];
-    A[12] = A[6] << 1;
-    A[13] = A[12] ^ A[1];
-    A[14] = A[7] << 1;
-    A[15] = A[14] ^ A[1];
-    lo = A[b & 15];
-    lo ^= (A[(b >> 4) & 15] << 4);
-    t = A[(b >> 8) & 15];
-    t ^= (A[(b >> 12) & 15] << 4);
-    lo ^= t << 8;
-    return (uint128_t) lo;
-}
-
-static uint128_t _mm_clmulepi64_si128(uint64_t a, uint64_t b) {
-    uint64_t high, low, tmp;
-    uint64_t A[16];
-    A[0] = 0;
-    A[1] = a;
-    A[2] = A[1] << 1;
-    A[3] = A[2] ^ A[1];
-    A[4] = A[2] << 1;
-    A[5] = A[4] ^ A[1];
-    A[6] = A[3] << 1;
-    A[7] = A[6] ^ A[1];
-    A[8] = A[4] << 1;
-    A[9] = A[8] ^ A[1];
-    A[10] = A[5] << 1;
-    A[11] = A[10] ^ A[1];
-    A[12] = A[6] << 1;
-    A[13] = A[12] ^ A[1];
-    A[14] = A[7] << 1;
-    A[15] = A[14] ^ A[1];
-    low = A[b & 15];
-    tmp = A[(b >> 4) & 15];
-    high = tmp >> 60;
-    low ^= tmp << 4;
-    tmp = A[(b >> 8) & 15];
-    high ^= tmp >> 56;
-    low ^= tmp << 8;
-    tmp = A[(b >> 12) & 15];
-    high ^= tmp >> 52;
-    low ^= tmp << 12;
-    tmp = A[(b >> 16) & 15];
-    high ^= tmp >> 48;
-    low ^= tmp << 16;
-    tmp = A[(b >> 20) & 15];
-    high ^= tmp >> 44;
-    low ^= tmp << 20;
-    tmp = A[(b >> 24) & 15];
-    high ^= tmp >> 40;
-    low ^= tmp << 24;
-    tmp = A[(b >> 28) & 15];
-    high ^= tmp >> 36;
-    low ^= tmp << 28;
-    tmp = A[(b >> 32) & 15];
-    high ^= tmp >> 32;
-    low ^= tmp << 32;
-    tmp = A[(b >> 36) & 15];
-    high ^= tmp >> 28;
-    low ^= tmp << 36;
-    tmp = A[(b >> 40) & 15];
-    high ^= tmp >> 24;
-    low ^= tmp << 40;
-    tmp = A[(b >> 44) & 15];
-    high ^= tmp >> 20;
-    low ^= tmp << 44;
-    tmp = A[(b >> 48) & 15];
-    high ^= tmp >> 16;
-    low ^= tmp << 48;
-    tmp = A[(b >> 52) & 15];
-    high ^= tmp >> 12;
-    low ^= tmp << 52;
-    tmp = A[(b >> 56) & 15];
-    high ^= tmp >> 8;
-    low ^= tmp << 56;
-    tmp = A[b >> 60];
-    high ^= tmp >> 4;
-    low ^= tmp << 60;
-    high ^= (((b & 0xeeeeeeeeeeeeeeeeUL) >> 1) & (-(a >> 63)))
-            ^ (((b & 0xccccccccccccccccUL) >> 2) & (-((a >> 62) & 1UL)))
-            ^ (((b & 0x8888888888888888UL) >> 3) & (-((a >> 61) & 1UL)));
-    return (((uint128_t) low) ^ ((uint128_t) high) << 64);
-}
-
-#endif
-
-#ifdef AVX2
 
 void bf_unreduced_multiplication_karatsuba(bf_double_element_t *c, const bf_element_t *a,
                                            const bf_element_t *b) {
@@ -496,13 +380,8 @@ void bf_unreduced_multiplication_karatsuba(bf_double_element_t *c, const bf_elem
     c->value = _mm256_xor_si256(c->value, a_low_times_b_high_xor_a_high_times_b_low256);
 }
 
-#endif
-
-
 void bf_unreduced_multiplication(bf_double_element_t *c, const bf_element_t *a,
                                  const bf_element_t *b) {
-
-#ifdef AVX2
 
     __m128i a_low_times_b_low, a_low_times_b_high, a_high_times_b_low, a_high_times_b_high, a_low_times_b_high_xor_a_high_times_b_low;
     __m256i a_low_times_b_high_xor_a_high_times_b_low256;
@@ -528,21 +407,6 @@ void bf_unreduced_multiplication(bf_double_element_t *c, const bf_element_t *a,
     c->value = _mm256_set_m128i(a_high_times_b_high, a_low_times_b_low);
     // [AlBl || AhBh] ^ [0 || (AhBl ^ AlBh) || 0]
     c->value = _mm256_xor_si256(c->value, a_low_times_b_high_xor_a_high_times_b_low256);
-
-#else
-    uint128_t a_low_times_b_high, a_high_times_b_low, a_low_times_b_high_xor_a_high_times_b_low;
-
-    uint128_t a_low_times_b_low, karatsuba_trick, a_high_times_b_high;
-    uint64_t al_xor_ah = (uint64_t) ((a->value >> 64u) ^ (uint64_t) a->value);
-    uint64_t bl_xor_bh = (uint64_t) ((b->value >> 64u) ^ (uint64_t) b->value);
-
-    a_low_times_b_low = _mm_clmulepi64_si128((uint64_t) b->value, (uint64_t) a->value);
-    a_high_times_b_high = _mm_clmulepi64_si128((uint64_t) (b->value >> 64u), (uint64_t) (a->value >> 64u));
-    karatsuba_trick = _mm_clmulepi64_si128(al_xor_ah, bl_xor_bh) ^ a_low_times_b_low ^ a_high_times_b_high;
-
-    c->value.low = a_low_times_b_low ^ (karatsuba_trick << 64u);
-    c->value.high = a_high_times_b_high ^ (karatsuba_trick >> 64u);
-#endif
 }
 
 void bf_reduction(bf_element_t *reduced_a, bf_double_element_t *a) {
@@ -577,7 +441,6 @@ void bf_multiplication(bf_element_t *c, bf_element_t *a, bf_element_t *b) {
 
 
 void bf_unreduced_square(bf_double_element_t *c, bf_element_t *a) {
-#ifdef AVX2
     static const __m128i squaring_left_mask = {0x0F0F0F0F0F0F0F0F, 0x0F0F0F0F0F0F0F0F};
     static const __m128i squaring_lookup_table = {0x1514111005040100, 0x5554515045444140};
     __m128i a_left, a_right, tmp0, tmp1;
@@ -593,38 +456,13 @@ void bf_unreduced_square(bf_double_element_t *c, bf_element_t *a) {
     tmp0 = _mm_unpacklo_epi8(a_left, a_right);
     tmp1 = _mm_unpackhi_epi8(a_left, a_right);
     c->value = _mm256_loadu2_m128i(&tmp0, &tmp1);
-#else
-    int i;
-    c->value.low = interleave_zeros((uint8_t) a->value);
-    c->value.high = interleave_zeros((uint8_t) (a->value >> 64u));
-#pragma unroll
-    for (i = 1; i < sizeof(uint128_t) / 2; i++) {
-        c->value.low |= (interleave_zeros((uint8_t) (a->value >> (i * 8u)))) << (i * 16u);
-        c->value.high |= interleave_zeros((uint8_t) (a->value >> ((i + 4u) * 8u))) << (i * 16u + 64u);
-    }
-#endif
 }
 
 void bf_square(bf_element_t *c, bf_element_t *a) {
 
-#ifdef AVX2
     bf_double_element_t c_tmp;
     bf_unreduced_square(&c_tmp, a);
     bf_reduction(c, &c_tmp);
-
-#else
-    uint128_t low = 0, high = 0;
-    int i;
-    for (i = 0; i < 8; i++) {
-        low ^= (((uint128_t) interleave_zeros((uint8_t) (a->value >> (8u * i)))) << (16u * i));
-    }
-    for (i = 8; i < ROLLO_I_BF_ELEMENT_BYTE_SIZE; i++) {
-        high ^= (((uint128_t) interleave_zeros((uint8_t) (a->value >> (8u * i)))) << (16u * (i - 8u)));
-    }
-    __m256i double_value = {high, low};
-    bf_double_element_t c_double = {double_value};
-    bf_reduction(c, &c_double);
-#endif
 }
 
 void bf_inversion(bf_element_t *x_inverse, bf_element_t *x) {
@@ -729,21 +567,11 @@ void bf_inversion(bf_element_t *x_inverse, bf_element_t *x) {
 
 uint8_t uint8_t_ith_coefficient(bf_element_t *a, uint16_t i) {
     uint8_t pos = i / 64u;
-//    uint8_t bit =  pos * (a->high >> (i - 64u)) ^ (1u-pos)*(a->low >> i);
     uint8_t bit =  ((uint64_t) (pos * (a->high >> (i - 64u))) ^ (1u-pos)*(a->low >> i)) & 0x1u;
-//    uint8_t bit;
-//    if (i < 67u && i >= 64u)
-//        bit = a->high >> (i-64u);
-//    else
-//        bit = a->low >> i;
-//
+
     return bit;
 }
 
-//void bf_ith_coefficient(bf_element_t *b, bf_element_t *a, int i) {
-//    b->value = a->value >> (uint64_t) i;
-//    b->value = b->value & 1u;
-//}
 
 void bf_and(bf_element_t *c, bf_element_t *b, bf_element_t *a) {
     c->low = b->low & a->low;
