@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 3.7)
+set(PROJECT_NAME rollo_i_128_ct_avx2_lib)
+project(${PROJECT_NAME})
+
+
+enable_testing()
+
+if (${CMAKE_BUILD_TYPE} MATCHES Debug)
+    if (WIN32)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -Wl,--stack,16000000")
+        add_definitions(-DWINDOWS)
+    elseif (UNIX AND NOT APPLE)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -std=c99")
+        add_definitions(-DLINUX)
+    elseif (APPLE)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g  -Wall -std=c99")
+        add_definitions(-DAPPLE)
+    elseif (ARM)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -std=c99 -fPIE -fPIC")
+        add_definitions(-DARM)
+    else ()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall")
+    endif ()
+elseif (${CMAKE_BUILD_TYPE} MATCHES Release)
+    if (WIN32)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -Wall -Wl,--stack,16000000")
+        add_definitions(-DWINDOWS)
+    elseif (ARM)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -Wall -std=c99 -fPIE -fPIC")
+        add_definitions(-DARM)
+    elseif (UNIX AND NOT APPLE)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -Wall -std=c99")
+        add_definitions(-DLINUX)
+    elseif (APPLE)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -Wall -std=c99")
+        add_definitions(-DAPPLE)
+    else ()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -Wall -std=c99")
+    endif ()
+else ()
+    message(FATAL_ERROR "Specify build mode by typring either -DCMAKE_BUILD_TYPE=Release or -DCMAKE_BUILD_TYPE=Debug")
+endif ()
+
+if (OPTIMIZATION MATCHES AVX2)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+    add_definitions(-DAVX2)
+    message(STATUS "Using AVX2")
+elseif (OPTIMIZATION MATCHES NEON)
+    add_definitions(-DNEON)
+    message(STATUS "Using NEON")
+endif ()
+
+message(STATUS "BUILDING IN ${CMAKE_BUILD_TYPE} MODE")
+message(STATUS "COMPILATION FLAGS: ${CMAKE_C_FLAGS}")
+
+include(subdirs.cmake)
+
+add_library(${PROJECT_NAME} STATIC
+        $<TARGET_OBJECTS:rollo-i-128>
+        $<TARGET_OBJECTS:nist>
+        )
+
+find_package(OpenSSL REQUIRED)
+target_link_libraries(${PROJECT_NAME} OpenSSL::Crypto)
+
