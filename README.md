@@ -28,5 +28,18 @@ git clone https://github.com/peacker/constant_time_rollo.git
 cd constant_time_rollo
 cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release -DOPTIMIZATION=AVX2
 make
-./cmake-build-release/tests/rollo_i_128_tests
+./rollo-i-128/rollo_i_128_simple_test
+./tests/rollo_i_128_tests
 ```
+
+The command
+
+`./rollo-i-128/rollo_i_128_simple_test`
+
+simply runs Key generation, Encapsulation and Decapsulation.
+
+The command
+
+`./tests/rollo_i_128_tests`
+
+runs unit and performance tests.

@@ -28,13 +28,6 @@ typedef struct {
 } bf_element_t;
 #endif
 
-#ifndef AVX2
-typedef struct {
-    uint64_t high;
-    uint64_t low;
-} __m256i;
-#endif
-
 typedef struct {
     __m256i value;
 } bf_double_element_t;
@@ -92,10 +85,7 @@ void bf_double_addition(bf_double_element_t *c, bf_double_element_t *a, bf_doubl
 
 void bf_unreduced_multiplication(bf_double_element_t *c, const bf_element_t *a, const bf_element_t *b);
 
-#if AVX2
 void bf_unreduced_multiplication_karatsuba(bf_double_element_t *c, const bf_element_t *a, const bf_element_t *b);
-#endif
-
 
 void bf_reduction(bf_element_t *reduced_a, bf_double_element_t *a);
 void bf_reduction_uint64(uint64_t *o, const uint64_t *e);
