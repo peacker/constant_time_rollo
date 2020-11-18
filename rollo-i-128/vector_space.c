@@ -300,7 +300,7 @@ int generate_support_from_basis(bf_element_t *support, bf_element_t *support_bas
     return EXIT_SUCCESS;
 }
 
-int generate_random_linear_combination(bf_element_t *output, bf_element_t *basis, u_int16_t basis_length,
+int generate_random_linear_combination(bf_element_t *output, bf_element_t *basis, uint16_t basis_length,
                                        AES_XOF_struct *prng) {
     bf_element_t mask;
     unsigned int bytes_to_generate_per_component = (basis_length + 7u) / 8;
@@ -320,7 +320,7 @@ int generate_random_linear_combination(bf_element_t *output, bf_element_t *basis
 }
 
 int generate_random_linear_combinations(bf_element_t *output, uint16_t output_length, bf_element_t *basis,
-                                        u_int16_t basis_length,
+                                        uint16_t basis_length,
                                         AES_XOF_struct *prng) {
     bf_element_t mask;
     unsigned int bytes_to_generate_per_component = (basis_length + 7u) / 8;
@@ -346,7 +346,7 @@ int generate_random_linear_combinations(bf_element_t *output, uint16_t output_le
 }
 
 
-int generate_list_of_vectors_with_given_rank(bf_element_t *list, uint16_t list_length, u_int16_t desired_rank,
+int generate_list_of_vectors_with_given_rank(bf_element_t *list, uint16_t list_length, uint16_t desired_rank,
                                              bf_element_t *list_basis, AES_XOF_struct *prng) {
     // rank is also the list basis length
     uint16_t actual_rank = 0;
@@ -372,7 +372,7 @@ int generate_two_list_of_vectors_with_given_rank_and_their_basis(
         // as the probability of failing is 2^-120
         bf_element_t *list1, uint16_t list1_length,
         bf_element_t *list2, uint16_t list2_length,
-        u_int16_t desired_rank, bf_element_t *list_basis, // TODO invert position of list basis and rank
+        uint16_t desired_rank, bf_element_t *list_basis, // TODO invert position of list basis and rank
         AES_XOF_struct *prng) {
     // rank is also the list basis length
     uint16_t actual_rank = 0;
@@ -432,7 +432,7 @@ int generate_two_list_of_vectors_with_given_rank(
         // as the probability of failing is 2^-60
         bf_element_t *list1, uint16_t list1_length,
         bf_element_t *list2, uint16_t list2_length,
-        u_int16_t desired_rank, bf_element_t *list_basis, // TODO invert position of list basis and rank
+        uint16_t desired_rank, bf_element_t *list_basis, // TODO invert position of list basis and rank
         AES_XOF_struct *prng) {
     // desired_rank is also the list basis length
 
@@ -468,7 +468,7 @@ int generate_two_list_of_vectors_with_given_rank(
 // todo: unit test this function
 // max rank that can be generated is ROLLO_I_ERROR_VECTORS_RANK_WEIGHT
 int generate_list_of_vectors_with_given_rank2(bf_element_t *list, uint16_t list_length,
-                                              u_int16_t rank, bf_element_t *list_basis, AES_XOF_struct *prng) {
+                                              uint16_t rank, bf_element_t *list_basis, AES_XOF_struct *prng) {
     // The length of the list must be 2^rank
     // list_basis is the basis of the vector space
 

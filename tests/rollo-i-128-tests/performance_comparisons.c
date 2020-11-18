@@ -755,7 +755,7 @@ void performance_generate_list_of_vectors_with_given_rank_RANK_7_LIST_LEN_10() {
     int i;
 
 
-    u_int16_t rank = 7;
+    uint16_t rank = 7;
     bf_element_t list_basis[rank];
     uint16_t list_length = 10;
     bf_element_t list[list_length];
@@ -800,7 +800,7 @@ void performance_generate_list_of_vectors_with_given_rank_RANK_7_LIST_LEN_100() 
     int i;
 
 
-    u_int16_t rank = 7;
+    uint16_t rank = 7;
     bf_element_t list_basis[rank];
     uint16_t list_length = 100;
     bf_element_t list[list_length];
@@ -845,7 +845,7 @@ void performance_generate_two_lists_of_vectors_with_given_rank_RANK_7_LIST_LEN_1
     int i;
 
 
-    u_int16_t rank = 7;
+    uint16_t rank = 7;
     bf_element_t list_basis[rank];
     uint16_t list_length = 10;
     bf_element_t list1[list_length];
@@ -891,7 +891,7 @@ void performance_generate_two_lists_of_vectors_with_given_rank_RANK_7_LIST_LEN_1
     int i;
 
 
-    u_int16_t rank = 7;
+    uint16_t rank = 7;
     bf_element_t list_basis[rank];
     uint16_t list_length = 100;
     bf_element_t list1[list_length];

@@ -17,13 +17,13 @@ int generate_random_support_basis(bf_element_t *support_basis, uint16_t rank, AE
 
 int generate_support_from_basis(bf_element_t *support, bf_element_t *support_basis, uint16_t support_basis_size);
 
-int generate_random_linear_combination(bf_element_t *output, bf_element_t *basis, u_int16_t basis_length, AES_XOF_struct *prng);
+int generate_random_linear_combination(bf_element_t *output, bf_element_t *basis, uint16_t basis_length, AES_XOF_struct *prng);
 
-int generate_list_of_vectors_with_given_rank(bf_element_t *list, uint16_t list_length, u_int16_t rank, bf_element_t *list_basis, AES_XOF_struct *prng);
+int generate_list_of_vectors_with_given_rank(bf_element_t *list, uint16_t list_length, uint16_t rank, bf_element_t *list_basis, AES_XOF_struct *prng);
 int generate_two_list_of_vectors_with_given_rank_and_their_basis(
         bf_element_t *list1, uint16_t list1_length,
         bf_element_t *list2, uint16_t list2_length,
-        u_int16_t desired_rank, bf_element_t *list_basis, // TODO invert position of list basis and rank
+        uint16_t desired_rank, bf_element_t *list_basis, // TODO invert position of list basis and rank
         AES_XOF_struct *prng);
 
 int zassenhaus_algorithm_reduction(bf_element_t *matrix_left, bf_element_t *matrix_right, uint16_t number_of_lines);
